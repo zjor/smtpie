@@ -1,10 +1,11 @@
 # config.py
+from os import environ
 
-SECRET_KEY = 'wJFAuKlyN4szdJnNwE+5W6io1XU='
+SECRET_KEY = environ.get('SECRET_KEY')
 
-MAIL_SERVER ='smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USERNAME = 'postemailer@gmail.com'
-MAIL_PASSWORD = 'G0WXOJlQCw3U33UTONzx'
-MAIL_USE_TLS = False
-MAIL_USE_SSL = True
+MAIL_SERVER = environ.get('MAIL_SERVER')
+MAIL_PORT = environ.get('MAIL_PORT')
+MAIL_USERNAME = environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
+MAIL_USE_SSL = environ.get('MAIL_USE_SSL')
+

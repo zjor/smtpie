@@ -1,0 +1,10 @@
+# mailgun sample .env
+
+SECRET_KEY=<YourSecretKey>
+
+MAIL_SERVER=smtp.mailgun.org  
+MAIL_PORT=587
+MAIL_USERNAME=<MailGunUserName>
+MAIL_PASSWORD=<MailGunPassword>
+MAIL_USE_TLS=True
+

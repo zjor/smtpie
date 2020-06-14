@@ -1,7 +1,9 @@
 Dockerfile
 __pycache__/
 mailapp/__pycache__/
-run.sh
+config/
+/run.sh
 secret
 test.py
-
+*.json
+.env

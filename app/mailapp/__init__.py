@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_mail import Mail, Message
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
+from threading import Thread
 import json
 
 app = Flask(__name__)
@@ -13,6 +14,10 @@ mail= Mail(app)
 @app.route("/")
 def get():
 	return "Server is running"
+
+def send_async_email(app, msg):
+	with app.app_context():
+		mail.send(msg)
 
 @app.route("/api/send", methods=['POST'])
 def send():
@@ -25,7 +30,8 @@ def send():
 		subject=data["subject"],
 		html=html
 	)
-	mail.send(msg)
+	thread = Thread(target=send_async_email, args=(app, msg))
+	thread.start()
 	return "Your message has been sent!"
 
 @app.route("/api/spec")

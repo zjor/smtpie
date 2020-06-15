@@ -1,7 +1,4 @@
 __pycache__/
-app/mailapp/__pycache__/
-app/config/
-app/run.sh
-secret
+**/mailapp/__pycache__/
 *.json
-.env
+**.env

@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  app:
+    container_name: postemailer
+    restart: always
+    build: ./app
+    volumes: ['./app:/app']
+    networks:
+      - appnetwork
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx
+    networks:
+      - appnetwork
+    expose:
+      - "8080"
+    ports:
+      - "80:8080"
+
+networks:
+  appnetwork:

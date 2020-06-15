@@ -1,0 +1,50 @@
+[2020-06-15 12:43:17,931] ERROR in app: Exception on /api/send [POST]
+Traceback (most recent call last):
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask_mail.py", line 492, in send
+    message.send(connection)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask_mail.py", line 427, in send
+    connection.send(self)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask_mail.py", line 188, in send
+    self.host.sendmail(sanitize_address(envelope_from or message.sender),
+  File "/usr/lib64/python3.8/smtplib.py", line 856, in sendmail
+    self.ehlo_or_helo_if_needed()
+  File "/usr/lib64/python3.8/smtplib.py", line 604, in ehlo_or_helo_if_needed
+    if not (200 <= self.ehlo()[0] <= 299):
+  File "/usr/lib64/python3.8/smtplib.py", line 444, in ehlo
+    self.putcmd(self.ehlo_msg, name or self.local_hostname)
+  File "/usr/lib64/python3.8/smtplib.py", line 371, in putcmd
+    self.send(str)
+  File "/usr/lib64/python3.8/smtplib.py", line 363, in send
+    raise SMTPServerDisconnected('please run connect() first')
+smtplib.SMTPServerDisconnected: please run connect() first
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/zubrik/Projects/Gitlab/postemailer/app/mailapp/__init__.py", line 28, in send
+    mail.send(msg)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask_mail.py", line 492, in send
+    message.send(connection)
+  File "/home/zubrik/.virtualenvs/flaskmail/lib/python3.8/site-packages/flask_mail.py", line 152, in __exit__
+    self.host.quit()
+  File "/usr/lib64/python3.8/smtplib.py", line 988, in quit
+    res = self.docmd("quit")
+  File "/usr/lib64/python3.8/smtplib.py", line 424, in docmd
+    self.putcmd(cmd, args)
+  File "/usr/lib64/python3.8/smtplib.py", line 371, in putcmd
+    self.send(str)
+  File "/usr/lib64/python3.8/smtplib.py", line 363, in send
+    raise SMTPServerDisconnected('please run connect() first')
+smtplib.SMTPServerDisconnected: please run connect() first

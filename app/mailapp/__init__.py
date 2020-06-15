@@ -1,7 +1,9 @@
-# mailapp/__init__.py
+# app/mailapp/__init__.py
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_mail import Mail, Message
+from flask_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
 import json
 
 app = Flask(__name__)
@@ -26,5 +28,13 @@ def send():
 	mail.send(msg)
 	return "Your message has been sent!"
 
+@app.route("/api/spec")
+def spec():
+	swag = swagger(app, prefix='/api')
+	swag['info']['base'] = "http://0.0.0.0:5000"
+	swag['info']['version'] = "1.0"
+	swag['info']['title'] = "Postemailer"
+	return jsonify(swag)
+
 if __name__ == '__main__':
-	app.run(debug=False)
+	app.run(host='0.0.0.0')

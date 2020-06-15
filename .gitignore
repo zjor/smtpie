@@ -1,9 +1,7 @@
-Dockerfile
 __pycache__/
-mailapp/__pycache__/
-config/
-/run.sh
+app/mailapp/__pycache__/
+app/config/
+app/run.sh
 secret
-test.py
 *.json
 .env

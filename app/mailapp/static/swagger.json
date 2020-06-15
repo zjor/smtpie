@@ -1,0 +1,94 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Postemailer app",
+    "version" : "1.0",
+    "title" : "postemailer"
+  },
+  "paths" : {
+    "/api/spec" : {
+      "get" : {
+        "produces" : [ "text/html" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Definition generated from Swagger Inspector",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/send" : {
+      "post" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/html" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Model0"
+          },
+          "x-examples" : {
+            "application/json" : "{\n\t\"from\": \"example@example.com\", \n\t\"to\": \"rzubrytski@gmail.com\", \n\t\"subject\": \"Testing\", \n\t\"html\": \"base.html\",\n\t\"params\": {\"name\": \"Sample user\", \"service\": \"Postemailer\"}\n}"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Definition generated from Swagger Inspector",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/" : {
+      "get" : {
+        "produces" : [ "text/html" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Definition generated from Swagger Inspector",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Params" : {
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "service" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Model0" : {
+      "properties" : {
+        "from" : {
+          "type" : "string"
+        },
+        "to" : {
+          "type" : "string"
+        },
+        "subject" : {
+          "type" : "string"
+        },
+        "html" : {
+          "type" : "string"
+        },
+        "params" : {
+          "$ref" : "#/definitions/Params"
+        }
+      }
+    }
+  }
+}

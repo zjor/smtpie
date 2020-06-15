@@ -1,6 +1,7 @@
 # app/mailapp/__init__.py
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Blueprint, \
+													send_from_directory
 from flask_mail import Mail, Message
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -10,6 +11,16 @@ import json
 app = Flask(__name__)
 app.config.from_object('config')
 mail= Mail(app)
+
+SWAGGER_URL = '/api/spec'
+API_URL = '/static/swagger.json'
+
+swaggerui = get_swaggerui_blueprint(
+	SWAGGER_URL,
+	API_URL
+)
+
+app.register_blueprint(swaggerui, url_prefix=SWAGGER_URL)
 
 @app.route("/")
 def get():
@@ -33,14 +44,6 @@ def send():
 	thread = Thread(target=send_async_email, args=(app, msg))
 	thread.start()
 	return "Your message has been sent!"
-
-@app.route("/api/spec")
-def spec():
-	swag = swagger(app, prefix='/api')
-	swag['info']['base'] = "http://0.0.0.0:5000"
-	swag['info']['version'] = "1.0"
-	swag['info']['title'] = "Postemailer"
-	return jsonify(swag)
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0')

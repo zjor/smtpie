@@ -6,13 +6,8 @@ services:
     container_name: postemailer
     restart: unless-stopped
     build: ./app
-    volumes: ['./app:/app']
-    networks:
-      - appnetwork
-    expose:
-      - "5000"
-    ports:
-      - "5000:5000"
+    volumes:
+      - "$PWD/.env:/app/.env"
     environment:
       - NODE_ENV=production
 
@@ -20,12 +15,5 @@ services:
     container_name: nginx
     restart: unless-stopped
     build: ./nginx
-    networks:
-      - appnetwork
-    expose:
-      - "80"
     ports:
-      - "80:80"
-
-networks:
-  appnetwork:
+      - "8080:80"

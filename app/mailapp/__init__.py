@@ -77,7 +77,7 @@ def send():
 		return jsonify(success=True)
 	except:
 		app.logger.error(f"Sending failed: {traceback.format_exc()}")
-		return jsonify(success=False, error=traceback.format_exc())
+		return jsonify(success=False, errorMessage=traceback.format_exc())
 	
 
 def prepare_template(data):
@@ -87,6 +87,8 @@ def prepare_template(data):
 	elif 'templateUrl' in data:
 		template_content = tr.resolve(data['templateUrl'])
 		return render_template_string(template_content, **data['params'])
+	else:
+		raise Exception("Template is not specified")
 
 
 if __name__ == '__main__':

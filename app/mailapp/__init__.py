@@ -1,12 +1,14 @@
 # app/mailapp/__init__.py
 
 import json
+import traceback
 
 from flask import Flask, render_template, request, \
 					jsonify, Blueprint, \
 					send_from_directory, \
 					redirect, url_for, \
-					render_template_string
+					render_template_string, \
+					jsonify
 
 from flask_mail import Mail, Message
 from flask_swagger import swagger
@@ -55,7 +57,7 @@ def index():
 
 @app.route("/health")
 def health():
-	return "OK"
+	return jsonify(success=True)
 
 
 @app.route("/api/send", methods=['POST'])
@@ -64,25 +66,27 @@ def send():
 
 	app.logger.info(f"Sending: {data}")
 
-	msg = Message(
-		sender=data["from"],
-		recipients=[data["to"]],
-		subject=data["subject"],
-		html=prepare_template(data))
 	try:
+		msg = Message(
+			sender=data["from"],
+			recipients=[data["to"]],
+			subject=data["subject"],
+			html=prepare_template(data))
+	
 		mail.send(msg)
-		return "Your message has been sent!"
-	except Exception as e:
-		app.logger.error(f"Sending failed: {e}")
-		return "Sending failed"
+		return jsonify(success=True)
+	except:
+		app.logger.error(f"Sending failed: {traceback.format_exc()}")
+		return jsonify(success=False, error=traceback.format_exc())
 	
 
 def prepare_template(data):
 	if 'template' in data:
-		templateName = f"{data['template']}.html"
-		return render_template(template, **data['params'])
+		template_name = f"{data['template']}.html"
+		return render_template(template_name, **data['params'])
 	elif 'templateUrl' in data:
-		return render_template_string(tr.resolve(data['templateUrl'], **data[params]))
+		template_content = tr.resolve(data['templateUrl'])
+		return render_template_string(template_content, **data['params'])
 
 
 if __name__ == '__main__':

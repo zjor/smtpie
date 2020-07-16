@@ -7,9 +7,9 @@ class TemplateResolver:
 
 
 	def resolve(self, url):
-		if not url in cache:
-			app.logger.info(f"Fetching template from: {url}")
+		if not url in self.cache:
+			self.app.logger.info(f"Fetching template from: {url}")
 			res = rq.get(url)
 			# TODO: handle error
-			cache[url] = res.text
-		return cache[url]
+			self.cache[url] = res.text
+		return self.cache[url]

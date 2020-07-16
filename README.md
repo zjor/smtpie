@@ -17,3 +17,31 @@ curl 'http://0.0.0.0:5000/api/send' -H 'Content-Type: application/json' -d @para
 1. Build an image: `docker build -t smtpie ./app`
 2. Create `.env` file
 3. Run an image `docker run --rm -p 5000:5000 -v $PWD/.env:/app/.env smtpie`
+
+
+## Example of request payload
+```
+{
+  "from": "<SENDER_EMAIL>",
+  "to": "<YOUR_EMAIL>",
+  "subject": "Hello world",
+  "templateUrl": "https://gitlab.com/shared-living/smtpie/-/raw/master/app/mailapp/templates/default.html",
+  "params": {
+    "name": "Alice",
+    "service": "smtpie"
+  }
+}
+```
+
+```
+{
+  "from": "<SENDER_EMAIL>",
+  "to": "<YOUR_EMAIL>",
+  "subject": "Hello world",
+  "template": "default",
+  "params": {
+    "name": "Bob",
+    "service": "smtpie"
+  }
+}
+```

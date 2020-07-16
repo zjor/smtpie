@@ -1,5 +1,7 @@
 # app/mailapp/__init__.py
 
+import json
+
 from flask import Flask, render_template, request, \
 					jsonify, Blueprint, \
 					send_from_directory, \
@@ -8,8 +10,24 @@ from flask import Flask, render_template, request, \
 from flask_mail import Mail, Message
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
-from threading import Thread
-import json
+from logging.config import dictConfig
+
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -41,7 +59,7 @@ def send():
 
 	data = request.get_json()
 
-	print(f"Sending: {data}")
+	app.logger.info(f"Sending: {data}")
 
 	template = f"{data['template']}.html"
 	html = render_template(template, **data["params"])
@@ -54,7 +72,7 @@ def send():
 		mail.send(msg)
 		return "Your message has been sent!"
 	except Exception as e:
-		print(e)
+		app.logger.error(f"Sending failed: {e}")
 		return "Sending failed"
 	
 

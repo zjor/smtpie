@@ -5,12 +5,15 @@ import json
 from flask import Flask, render_template, request, \
 					jsonify, Blueprint, \
 					send_from_directory, \
-					redirect, url_for
+					redirect, url_for, \
+					render_template_string
 
 from flask_mail import Mail, Message
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
+
+from template_resolver import TemplateResolver
 
 
 dictConfig({
@@ -33,7 +36,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 mail= Mail(app)
 
-SWAGGER_URL = '/api/spec'
+SWAGGER_URL = '/docs/spec'
 API_URL = '/static/swagger.json'
 
 swaggerui = get_swaggerui_blueprint(
@@ -43,10 +46,11 @@ swaggerui = get_swaggerui_blueprint(
 
 app.register_blueprint(swaggerui, url_prefix=SWAGGER_URL)
 
+tr = TemplateResolver(app)
 
 @app.route("/")
 def index():
-	return redirect(url_for(SWAGGER_URL))
+	return redirect(SWAGGER_URL)
 
 
 @app.route("/health")
@@ -56,18 +60,15 @@ def health():
 
 @app.route("/api/send", methods=['POST'])
 def send():
-
 	data = request.get_json()
 
 	app.logger.info(f"Sending: {data}")
 
-	template = f"{data['template']}.html"
-	html = render_template(template, **data["params"])
 	msg = Message(
 		sender=data["from"],
 		recipients=[data["to"]],
 		subject=data["subject"],
-		html=html)
+		html=prepare_template(data))
 	try:
 		mail.send(msg)
 		return "Your message has been sent!"
@@ -75,6 +76,14 @@ def send():
 		app.logger.error(f"Sending failed: {e}")
 		return "Sending failed"
 	
+
+def prepare_template(data):
+	if 'template' in data:
+		templateName = f"{data['template']}.html"
+		return render_template(template, **data['params'])
+	elif 'templateUrl' in data:
+		return render_template_string(tr.resolve(data['templateUrl'], **data[params]))
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0')

@@ -1,4 +1,4 @@
-# postemailer
+# SMTPie
 
 ## Usage
 
@@ -14,6 +14,6 @@ curl 'http://0.0.0.0:5000/api/send' -H 'Content-Type: application/json' -d @para
 
 ## Running app docker image
 
-1. Build an image: `docker build -t smtpie .`
+1. Build an image: `docker build -t smtpie ./app`
 2. Create `.env` file
 3. Run an image `docker run --rm -p 5000:5000 -v $PWD/.env:/app/.env smtpie`

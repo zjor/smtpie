@@ -1,0 +1,7 @@
+# yandex sample .env
+
+MAIL_SERVER=smtp.yandex.com
+MAIL_PORT=465
+MAIL_USERNAME=<USERNAME>
+MAIL_PASSWORD=<PASSWORD> 
+MAIL_USE_TLS=True

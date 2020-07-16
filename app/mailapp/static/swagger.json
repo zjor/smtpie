@@ -82,7 +82,7 @@
         "subject" : {
           "type" : "string"
         },
-        "html" : {
+        "template" : {
           "type" : "string"
         },
         "params" : {

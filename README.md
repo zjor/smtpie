@@ -14,12 +14,6 @@ curl 'http://0.0.0.0:5000/api/send' -H 'Content-Type: application/json' -d @para
 
 ## Running app docker image
 
-1. Build an image: `docker build -t emailer .`
+1. Build an image: `docker build -t smtpie .`
 2. Create `.env` file
-3. Run an image `docker run --rm -p 5000:5000 -v $PWD/.env:/app/.env emailer`
-
-## Running with docker-compose
-
-1. Make sure `.env` file exists in the project's root directory
-2. Run `docker-compose up`
-3. Navigate to `http://localhost:8080/` URL
+3. Run an image `docker run --rm -p 5000:5000 -v $PWD/.env:/app/.env smtpie`

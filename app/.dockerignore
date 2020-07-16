@@ -1,7 +1,6 @@
 .git
 .cache
 .dockerignore
-docker_runfile
 *.json
 config/
 run.sh

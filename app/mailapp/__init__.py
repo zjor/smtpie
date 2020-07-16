@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 mail= Mail(app)
 
-SWAGGER_URL = '/docs/spec'
+SWAGGER_URL = '/api/spec'
 API_URL = '/static/swagger.json'
 
 swaggerui = get_swaggerui_blueprint(
@@ -27,12 +27,12 @@ app.register_blueprint(swaggerui, url_prefix=SWAGGER_URL)
 
 
 @app.route("/")
-def get():
+def index():
 	return redirect(url_for(SWAGGER_URL))
 
 
 @app.route("/health")
-def get():
+def health():
 	return "OK"
 
 
@@ -40,6 +40,9 @@ def get():
 def send():
 
 	data = request.get_json()
+
+	print(f"Sending: {data}")
+
 	template = f"{data['template']}.html"
 	html = render_template(template, **data["params"])
 	msg = Message(

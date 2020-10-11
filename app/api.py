@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, \
 					render_template_string, \
 					jsonify
 
-from flask_restplus import Resource, Api
+from flask_restplus import Resource, Api, fields
 from flask_mail import Mail, Message
 
 from logging.config import dictConfig
@@ -44,26 +44,28 @@ class HealthController(Resource):
 		return jsonify(success=True)
 
 
-req_parser = api.parser()
-req_parser.add_argument('from', location='json', type=str, required=True)
-req_parser.add_argument('to', location='json', type=str, required=True)
-req_parser.add_argument('subject', location='json', type=str, required=True)
-req_parser.add_argument('template', location='json', type=str)
-req_parser.add_argument('templateUrl', location='json', type=str)
+send_model = api.model("Email data", {
+		"from": fields.String,
+		"to": fields.String,
+		"subject": fields.String,
+		"template": fields.String,
+		"templateUrl": fields.String,
+		"params": fields.Raw
+	})
 
 @api.route('/api/send')
-@api.expect(req_parser)
 class SendController(Resource):
+
+	@api.expect(send_model)	
 	def post(self):
-
+		args = request.json
 		app.logger.info(f"Sending: {args}")
-
 		try:
 			msg = Message(
 				sender=args["from"],
 				recipients=[args["to"]],
 				subject=args["subject"],
-				html=prepare_template(args))
+				html=self.prepare_template(args))
 		
 			mail.send(msg)
 			return jsonify(success=True)
@@ -73,12 +75,14 @@ class SendController(Resource):
 
 
 	def prepare_template(self, data):
+		params = data['params'] if 'params' in data else None
+
 		if 'template' in data:
-			template_name = f"{data['template']}.html"
-			return render_template(template_name, **data['params'])
+			template_name = f"{data['template']}.html"			
+			return render_template(template_name, **params)
 		elif 'templateUrl' in data:
 			template_content = tr.resolve(data['templateUrl'])
-			return render_template_string(template_content, **data['params'])
+			return render_template_string(template_content, **params)
 		else:
 			raise Exception("Template is not specified")
 

@@ -1,3 +1,4 @@
+.local/
 __pycache__/
 **/mailapp/__pycache__/
 parameters.json

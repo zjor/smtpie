@@ -24,10 +24,10 @@ spec:
             - containerPort: 8080
           env:
             - name: TENANTS_CONFIG_FILE
-              value: /etc/smptie/.local.config.yaml
+              value: /etc/smtpie/.local.config.yaml
           volumeMounts:
             - name: config-volume
-              mountPath: /etc/smptie
+              mountPath: /etc/smtpie
           livenessProbe:
             # failureThreshold: 10
             initialDelaySeconds: 60

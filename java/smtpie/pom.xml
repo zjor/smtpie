@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.github.zjor</groupId>
-    <artifactId>smptie</artifactId>
+    <artifactId>smtpie</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>smptie</name>
+    <name>smtpie</name>
 
     <properties>
         <java.version>1.8</java.version>
@@ -101,6 +101,7 @@
     </dependencies>
 
     <build>
+        <finalName>${artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

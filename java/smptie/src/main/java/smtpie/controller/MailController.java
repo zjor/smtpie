@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import smtpie.aop.Log;
 import smtpie.service.EmailService;
 import smtpie.service.Tenant;
 import smtpie.service.TenantService;
@@ -22,7 +23,7 @@ public class MailController {
         this.emailService = emailService;
     }
 
-    // TODO: add logging
+    @Log
     @PostMapping("send")
     public SendEmailResponse send(
             @RequestHeader("X-App-ID") String appId,

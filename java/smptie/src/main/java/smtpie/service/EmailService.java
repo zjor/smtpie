@@ -1,16 +1,21 @@
 package smtpie.service;
 
+import org.springframework.http.MediaType;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 public class EmailService {
+
+    private final TemplateRenderer templateRenderer;
+
+    public EmailService(TemplateRenderer templateRenderer) {
+        this.templateRenderer = templateRenderer;
+    }
 
     public void send(
             Tenant tenant,
@@ -53,10 +58,9 @@ public class EmailService {
         message.setRecipients(Message.RecipientType.TO, recipients);
         message.setSubject(subject);
 
-        String msg = template.get();
-
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html");
+        String messageBody = renderMessage(template, templateUrl, params.orElse(Collections.emptyMap()));
+        mimeBodyPart.setContent(messageBody, MediaType.TEXT_HTML_VALUE);
 
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
@@ -64,6 +68,21 @@ public class EmailService {
         message.setContent(multipart);
 
         Transport.send(message);
+    }
+
+    private String renderMessage(
+            Optional<String> template,
+            Optional<String> templateUrl,
+            Map<String, Object> params
+    ) {
+        if (template.isPresent()) {
+            return templateRenderer.render(template.get(), params);
+        }
+
+        if (templateUrl.isPresent()) {
+            // TODO: resolve template & render
+        }
+        throw new RuntimeException("Either template or templateUrl should be populated");
     }
 
 }

@@ -1,9 +1,11 @@
 package smtpie.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import smtpie.service.EmailService;
+import smtpie.service.TemplateRenderer;
 import smtpie.service.TenantService;
 
 import java.io.File;
@@ -28,8 +30,12 @@ public class ServiceConfiguration {
     }
 
     @Bean
-    public EmailService emailService() {
-        return new EmailService();
+    public TemplateRenderer templateRenderer() {
+        return new TemplateRenderer();
     }
 
+    @Bean
+    public EmailService emailService(@Autowired TemplateRenderer templateRenderer) {
+        return new EmailService(templateRenderer);
+    }
 }

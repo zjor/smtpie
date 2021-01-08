@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Data
 public class SendEmailRequest {
@@ -20,12 +19,12 @@ public class SendEmailRequest {
     private List<String> recipients;
 
     @JsonProperty("template")
-    private Optional<String> template;
+    private String template;
 
     @JsonProperty("templateUrl")
-    private Optional<String> templateUrl;
+    private String templateUrl;
 
     @JsonProperty("params")
-    private Optional<Map<String, Object>> params;
+    private Map<String, Object> params;
 
 }

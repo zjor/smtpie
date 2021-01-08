@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import smtpie.service.EmailService;
 import smtpie.service.TemplateRenderer;
+import smtpie.service.TemplateResolver;
 import smtpie.service.TenantService;
 
 import java.io.File;
@@ -35,7 +36,14 @@ public class ServiceConfiguration {
     }
 
     @Bean
-    public EmailService emailService(@Autowired TemplateRenderer templateRenderer) {
-        return new EmailService(templateRenderer);
+    public TemplateResolver templateResolver() {
+        return new TemplateResolver();
+    }
+
+    @Bean
+    public EmailService emailService(
+            @Autowired TemplateRenderer templateRenderer,
+            @Autowired TemplateResolver templateResolver) {
+        return new EmailService(templateRenderer, templateResolver);
     }
 }

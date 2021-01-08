@@ -1,6 +1,7 @@
 package smtpie.service;
 
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -12,9 +13,11 @@ import java.util.*;
 public class EmailService {
 
     private final TemplateRenderer templateRenderer;
+    private final TemplateResolver templateResolver;
 
-    public EmailService(TemplateRenderer templateRenderer) {
+    public EmailService(TemplateRenderer templateRenderer, TemplateResolver templateResolver) {
         this.templateRenderer = templateRenderer;
+        this.templateResolver = templateResolver;
     }
 
     public void send(
@@ -22,10 +25,9 @@ public class EmailService {
             String from,
             List<String> to,
             String subject,
-            Optional<String> template,
-            Optional<String> templateUrl,
-            Optional<Map<String, Object>> params
-    ) throws Exception {
+            String template,
+            String templateUrl,
+            Map<String, Object> params) throws Exception {
 
         String port = String.valueOf(tenant.getConnection().getPort());
 
@@ -59,7 +61,7 @@ public class EmailService {
         message.setSubject(subject);
 
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        String messageBody = renderMessage(template, templateUrl, params.orElse(Collections.emptyMap()));
+        String messageBody = renderMessage(template, templateUrl, params);
         mimeBodyPart.setContent(messageBody, MediaType.TEXT_HTML_VALUE);
 
         Multipart multipart = new MimeMultipart();
@@ -71,16 +73,18 @@ public class EmailService {
     }
 
     private String renderMessage(
-            Optional<String> template,
-            Optional<String> templateUrl,
+            String template,
+            String templateUrl,
             Map<String, Object> params
     ) {
-        if (template.isPresent()) {
-            return templateRenderer.render(template.get(), params);
+        params = params != null ? params : Collections.emptyMap();
+        if (!StringUtils.isEmpty(template)) {
+            return templateRenderer.render(template, params);
         }
 
-        if (templateUrl.isPresent()) {
-            // TODO: resolve template & render
+        if (!StringUtils.isEmpty(templateUrl)) {
+            String templateContent = templateResolver.resolve(templateUrl);
+            return templateRenderer.render(templateContent, params);
         }
         throw new RuntimeException("Either template or templateUrl should be populated");
     }

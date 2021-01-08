@@ -1,0 +1,2 @@
+tenants:
+  config_file: ./.local.config.yaml

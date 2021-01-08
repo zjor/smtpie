@@ -1,61 +1,48 @@
 package smtpie.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.util.Properties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import smtpie.service.EmailService;
+import smtpie.service.Tenant;
+import smtpie.service.TenantService;
 
 @RestController
 @RequestMapping("api/v1/mail")
 public class MailController {
 
+    private final TenantService tenantService;
+    private final EmailService emailService;
+
+    @Autowired
+    public MailController(
+            TenantService tenantService, EmailService emailService) {
+        this.tenantService = tenantService;
+        this.emailService = emailService;
+    }
+
+    // TODO: add logging
     @PostMapping("send")
-    public SendEmailResponse send(@RequestBody SendEmailRequest req) throws Exception {
-        System.out.println(req);
+    public SendEmailResponse send(
+            @RequestHeader("X-App-ID") String appId,
+            @RequestHeader("X-Secret") String secret,
+            @RequestBody SendEmailRequest req) throws Exception {
 
-        final String username = "match@coliver.ru";
-        final String password = "vg9R2TJtD7CFnhJK";
-        String host = "smtp.yandex.com";
+        Tenant tenant = tenantService.get(appId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "TENANT_NOT_FOUND"));
 
-        Properties props = new Properties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", "465");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.debug", "true");
+        if (!tenant.getSecret().equals(secret)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "BAD_SECRET");
+        }
 
-        Session session = Session.getDefaultInstance(props,
-                new javax.mail.Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
-                    }
-                });
-
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("match@coliver.ru"));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("zjor.se@gmail.com"));
-        message.setSubject("Mail Subject");
-
-        String msg = "This is my first email using JavaMailer";
-
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html");
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-
-        message.setContent(multipart);
-
-        Transport.send(message);
+        emailService.send(tenant,
+                req.getSender(),
+                req.getRecipients(),
+                req.getSubject(),
+                req.getTemplate(),
+                req.getTemplateUrl(),
+                req.getParams());
 
         return new SendEmailResponse(true);
     }

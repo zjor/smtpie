@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: smtpie
+  name: smtpie
+  namespace: smtpie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtpie
+  template:
+    metadata:
+      labels:
+        app: smtpie
+    spec:
+      restartPolicy: Always
+      containers:
+        - image: zjor/smtpie-multitenant:latest
+          imagePullPolicy: Always
+          name: smtpie
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TENANTS_CONFIG_FILE
+              value: /etc/smptie/.local.config.yaml
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/smptie
+          livenessProbe:
+            # failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+          readinessProbe:
+            # failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+      volumes:
+        - name: config-volume
+          configMap:
+            name: smtpie-config

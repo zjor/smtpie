@@ -1,2 +1,4 @@
+server.error.include-message: always
+
 tenants:
   config_file: ./.local.config.yaml

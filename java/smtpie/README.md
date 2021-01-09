@@ -15,4 +15,7 @@
 
 ### Check ConfigMap
 
-`kubectl describe configmaps -n smtpie` 
+`kubectl describe configmaps -n smtpie`
+
+## TODO:
+- proper errors in endpoints 

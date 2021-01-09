@@ -15,6 +15,8 @@ public class EmailService {
     private final TemplateRenderer templateRenderer;
     private final TemplateResolver templateResolver;
 
+    private final Map<String, FrequencyLimitService> quotas = new HashMap<>();
+
     public EmailService(TemplateRenderer templateRenderer, TemplateResolver templateResolver) {
         this.templateRenderer = templateRenderer;
         this.templateResolver = templateResolver;
@@ -27,7 +29,13 @@ public class EmailService {
             String subject,
             String template,
             String templateUrl,
-            Map<String, Object> params) throws Exception {
+            Map<String, Object> params) {
+
+        if (to.size() > tenant.getLimits().getMaxRecipients()) {
+            throw new EmailServiceException(EmailServiceException.Code.MAX_RECIPIENTS_QUOTA_EXCEEDED);
+        }
+
+        checkFrequencyQuotaOrThrow(tenant);
 
         String port = String.valueOf(tenant.getConnection().getPort());
 
@@ -50,26 +58,30 @@ public class EmailService {
                 });
 
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(from));
+        try {
+            message.setFrom(new InternetAddress(from));
 
-        Address[] recipients = new Address[to.size()];
-        for (int i = 0; i < to.size(); i++) {
-            recipients[i] = new InternetAddress(to.get(i));
+            Address[] recipients = new Address[to.size()];
+            for (int i = 0; i < to.size(); i++) {
+                recipients[i] = new InternetAddress(to.get(i));
+            }
+
+            message.setRecipients(Message.RecipientType.TO, recipients);
+            message.setSubject(subject);
+
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            String messageBody = renderMessage(template, templateUrl, params);
+            mimeBodyPart.setContent(messageBody, MediaType.TEXT_HTML_VALUE);
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
+
+            message.setContent(multipart);
+
+            Transport.send(message);
+        } catch (Exception e) {
+            throw new EmailServiceException(EmailServiceException.Code.EMAIL_SENDING_FAILED, e);
         }
-
-        message.setRecipients(Message.RecipientType.TO, recipients);
-        message.setSubject(subject);
-
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        String messageBody = renderMessage(template, templateUrl, params);
-        mimeBodyPart.setContent(messageBody, MediaType.TEXT_HTML_VALUE);
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-
-        message.setContent(multipart);
-
-        Transport.send(message);
     }
 
     private String renderMessage(
@@ -86,7 +98,18 @@ public class EmailService {
             String templateContent = templateResolver.resolve(templateUrl);
             return templateRenderer.render(templateContent, params);
         }
-        throw new RuntimeException("Either template or templateUrl should be populated");
+        throw new EmailServiceException(EmailServiceException.Code.NO_TEMPLATE_SPECIFIED);
+    }
+
+    private void checkFrequencyQuotaOrThrow(Tenant tenant) {
+        String appId = tenant.getAppId();
+        if (!quotas.containsKey(appId)) {
+            quotas.put(appId,
+                    new FrequencyLimitService(3600 * 1000L, tenant.getLimits().getMaxHourly()));
+        }
+        if (!quotas.get(appId).allowEvent(System.currentTimeMillis())) {
+            throw new EmailServiceException(EmailServiceException.Code.MAX_HOURLY_EMAIL_QUOTA_EXCEEDED);
+        }
     }
 
 }

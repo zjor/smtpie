@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class TenantService {
 
@@ -21,5 +22,9 @@ public class TenantService {
 
     public Optional<Tenant> get(String appId) {
         return Optional.ofNullable(tenantIndex.get(appId));
+    }
+
+    public Set<String> getAllIds() {
+        return tenantIndex.keySet();
     }
 }

@@ -1,6 +1,8 @@
 package smtpie.service;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class Tenant {
     private String secret;
     private Connection connection;
     private Credentials credentials;
+    private Limits limits = Limits.DEFAULT;
 
     @Data
     public static class Connection {
@@ -23,6 +26,17 @@ public class Tenant {
     public static class Credentials {
         private String username;
         private String password;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Limits {
+
+        public static final Limits DEFAULT = new Limits(15, 1000);
+
+        private int maxRecipients;
+        private int maxHourly;
     }
 
     @Data

@@ -19,5 +19,11 @@ spec:
           - backend:
               serviceName: smtpie
               servicePort: 8080
+    - host: 'smtpie.xyz'
+      http:
+        paths:
+          - backend:
+              serviceName: smtpie
+              servicePort: 8080
 
 

@@ -28,6 +28,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
+        registry.addResourceHandler("yandex_f48e4f29abafdb73.html")
+                .addResourceLocations("classpath:/templates/");
     }
 
     @Bean

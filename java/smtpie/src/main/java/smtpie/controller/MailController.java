@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import smtpie.aop.Log;
+import smtpie.controller.dto.SendEmailRequest;
+import smtpie.controller.dto.SendEmailResponse;
 import smtpie.service.EmailService;
 import smtpie.service.Tenant;
 import smtpie.service.TenantService;

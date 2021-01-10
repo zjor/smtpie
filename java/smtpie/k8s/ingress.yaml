@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: smtpie
+  namespace: smtpie
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: 'smtpie.176.102.64.189.xip.io'
+      http:
+        paths:
+          - backend:
+              serviceName: smtpie
+              servicePort: 8080
+    - host: 'api.smtpie.xyz'
+      http:
+        paths:
+          - backend:
+              serviceName: smtpie
+              servicePort: 8080
+    - host: 'smtpie.xyz'
+      http:
+        paths:
+          - backend:
+              serviceName: smtpie
+              servicePort: 8080
+
+

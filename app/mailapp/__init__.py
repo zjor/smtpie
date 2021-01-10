@@ -15,6 +15,8 @@ from logging.config import dictConfig
 
 from template_resolver import TemplateResolver
 
+from config import load_from_yaml, CONFIG_FILE
+
 dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -32,9 +34,10 @@ dictConfig({
 })
 
 app = Flask(__name__)
-app.config.from_object('config')
 api = Api(app)
-mail = Mail(app)
+mail = Mail()
+
+config = load_from_yaml(CONFIG_FILE)
 
 tr = TemplateResolver(app)
 
@@ -69,6 +72,16 @@ class SendController(Resource):
                 subject=args["subject"],
                 html=self.prepare_template(args))
 
+            mail_config = config['jho7qh']
+            app.config.update(dict(
+                MAIL_SERVER=mail_config.server,
+                MAIL_PORT=mail_config.port,
+                MAIL_USE_TLS=mail_config.use_ssl,
+                MAIL_USERNAME=mail_config.username,
+                MAIL_PASSWORD=mail_config.password
+            ))
+
+            mail.init_app(app)
             mail.send(msg)
             return jsonify(success=True)
         except:

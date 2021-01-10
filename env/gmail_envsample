@@ -1,9 +1,0 @@
-# gmail sample .env 
-
-SECRET_KEY=<YourSecretKey>
-
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USERNAME=<GmailUserName>
-MAIL_PASSWORD=<GmailPassword> 
-MAIL_USE_SSL=True

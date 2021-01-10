@@ -1,4 +1,0 @@
-config/
-docker_runfile
-.dockerignore
-run.sh

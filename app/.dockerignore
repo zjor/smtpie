@@ -1,7 +1,0 @@
-.git
-.cache
-.dockerignore
-*.json
-config/
-run.sh
-__pycache__/

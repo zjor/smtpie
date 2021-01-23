@@ -20,37 +20,26 @@ Features
 Demo
 ----
 
-Create ``request.json`` file with the following content:
+1. Create ``request.json`` file with the following content:
 
-    {
-      "from": "service@smtpie.xyz",
-      "to": ["<YOUR_EMAIL>"],
-      "subject": "Hello world",
-      "templateUrl": "https://gitlab.com/shared-living/smtpie/-/raw/master/app/mailapp/templates/default.html",
-      "params": {
-        "name": "Alice",
-        "service": "smtpie"
-      }
+.. code-block:: json
+  :linenos:
+
+  {
+    "from": "service@smtpie.xyz",
+    "to": ["<YOUR_EMAIL>"],
+    "subject": "Hello world",
+    "templateUrl": "https://gitlab.com/shared-living/smtpie/-/raw/master/app/mailapp/templates/default.html",
+    "params": {
+      "name": "Alice",
+      "service": "smtpie"
     }
+  }
 
-Issue the following command:
-``
-curl -X POST http://api.smtpie.xyz/api/v1/mail/send \
-    -d @request.json -H "Content-Type: application/json" \
-    -H "X-App-ID: smtpie" \
-    -H "X-Secret: s3cr3t"
-``
+2. Issue the following command:
+::
 
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+  curl -X POST http://api.smtpie.xyz/api/v1/mail/send \
+      -d @request.json -H "Content-Type: application/json" \
+      -H "X-App-ID: smtpie" \
+      -H "X-Secret: s3cr3t"

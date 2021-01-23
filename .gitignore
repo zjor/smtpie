@@ -1,6 +1,10 @@
+.DS_Store
+
 .idea/
 .local/
 __pycache__/
 **/mailapp/__pycache__/
 parameters.json
 **.env
+
+_build/

@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import smtpie.service.EmailService;
-import smtpie.service.TemplateRenderer;
-import smtpie.service.TemplateResolver;
-import smtpie.service.TenantService;
+import smtpie.service.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +40,13 @@ public class ServiceConfiguration {
     @Bean
     public EmailService emailService(
             @Autowired TemplateRenderer templateRenderer,
-            @Autowired TemplateResolver templateResolver) {
-        return new EmailService(templateRenderer, templateResolver);
+            @Autowired TemplateResolver templateResolver,
+            @Autowired StatsService statsService) {
+        return new EmailService(templateRenderer, templateResolver, statsService);
+    }
+
+    @Bean
+    public StatsService statsService() {
+        return new StatsService();
     }
 }

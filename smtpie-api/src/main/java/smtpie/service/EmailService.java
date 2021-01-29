@@ -14,12 +14,14 @@ public class EmailService {
 
     private final TemplateRenderer templateRenderer;
     private final TemplateResolver templateResolver;
+    private final StatsService statsService;
 
     private final Map<String, FrequencyLimitService> quotas = new HashMap<>();
 
-    public EmailService(TemplateRenderer templateRenderer, TemplateResolver templateResolver) {
+    public EmailService(TemplateRenderer templateRenderer, TemplateResolver templateResolver, StatsService statsService) {
         this.templateRenderer = templateRenderer;
         this.templateResolver = templateResolver;
+        this.statsService = statsService;
     }
 
     public void send(
@@ -32,6 +34,7 @@ public class EmailService {
             Map<String, Object> params) {
 
         if (to.size() > tenant.getLimits().getMaxRecipients()) {
+            statsService.incFailure(tenant.getAppId());
             throw new EmailServiceException(EmailServiceException.Code.MAX_RECIPIENTS_QUOTA_EXCEEDED);
         }
 
@@ -79,7 +82,9 @@ public class EmailService {
             message.setContent(multipart);
 
             Transport.send(message);
+            statsService.incSuccess(tenant.getAppId());
         } catch (Exception e) {
+            statsService.incFailure(tenant.getAppId());
             throw new EmailServiceException(EmailServiceException.Code.EMAIL_SENDING_FAILED, e);
         }
     }

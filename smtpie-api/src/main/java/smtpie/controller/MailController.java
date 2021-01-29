@@ -8,6 +8,7 @@ import smtpie.aop.Log;
 import smtpie.controller.dto.SendEmailRequest;
 import smtpie.controller.dto.SendEmailResponse;
 import smtpie.service.EmailService;
+import smtpie.service.StatsService;
 import smtpie.service.Tenant;
 import smtpie.service.TenantService;
 
@@ -17,12 +18,16 @@ public class MailController {
 
     private final TenantService tenantService;
     private final EmailService emailService;
+    private final StatsService statsService;
 
     @Autowired
     public MailController(
-            TenantService tenantService, EmailService emailService) {
+            TenantService tenantService,
+            EmailService emailService,
+            StatsService statsService) {
         this.tenantService = tenantService;
         this.emailService = emailService;
+        this.statsService = statsService;
     }
 
     @Log
@@ -30,12 +35,13 @@ public class MailController {
     public SendEmailResponse send(
             @RequestHeader("X-App-ID") String appId,
             @RequestHeader("X-Secret") String secret,
-            @RequestBody SendEmailRequest req) throws Exception {
+            @RequestBody SendEmailRequest req) {
 
         Tenant tenant = tenantService.get(appId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "TENANT_NOT_FOUND"));
 
         if (!tenant.getSecret().equals(secret)) {
+            statsService.incFailure(appId);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "BAD_SECRET");
         }
 

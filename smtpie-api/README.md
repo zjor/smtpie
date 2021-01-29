@@ -4,7 +4,7 @@
 
 `http :8080/api/v1/mail/send @.local.request.json X-App-ID:jho7qh X-Secret:k2znhv3ww5da6vb8`
 
-`http http://smtpie.176.102.64.189.xip.io/api/v1/mail/send @.local.request.json X-App-ID:jho7qh X-Secret:k2znhv3ww5da6vb8`
+`http http://api.smtpie.xyz/api/v1/mail/send @.local.request.json X-App-ID:jho7qh X-Secret:k2znhv3ww5da6vb8`
 
 
 ## Deployment

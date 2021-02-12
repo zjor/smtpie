@@ -1,6 +1,5 @@
 package smtpie.service;
 
-import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 import javax.mail.*;
@@ -74,7 +73,7 @@ public class EmailService {
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
             String messageBody = renderMessage(template, templateUrl, params);
-            mimeBodyPart.setContent(messageBody, MediaType.TEXT_HTML_VALUE);
+            mimeBodyPart.setContent(messageBody, "text/html;charset=UTF-8");
 
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(mimeBodyPart);

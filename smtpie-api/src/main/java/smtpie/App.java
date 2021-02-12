@@ -16,5 +16,19 @@ public class App {
         log.info("Loaded tenants:");
         tenantService.getAllIds().forEach(appId ->
                 log.info("{}: {}", appId, tenantService.get(appId).get()));
+
+        /*
+        // Encoding debug
+        TemplateResolver resolver = context.getBean(TemplateResolver.class);
+        TemplateRenderer renderer = context.getBean(TemplateRenderer.class);
+
+        String url = "https://gitlab.com/shared-living/resources/-/raw/master/templates/match.html";
+        String template = resolver.resolve(url);
+        log.info("Resolved: {}", template);
+
+        String rendered = renderer.render(template, Collections.emptyMap());
+        log.info("Rendered: {}", template);
+
+         */
     }
 }

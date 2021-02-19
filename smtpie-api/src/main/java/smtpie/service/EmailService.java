@@ -1,5 +1,6 @@
 package smtpie.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import javax.mail.*;
@@ -9,6 +10,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.*;
 
+@Slf4j
 public class EmailService {
 
     private final TemplateRenderer templateRenderer;
@@ -36,6 +38,8 @@ public class EmailService {
             statsService.incFailure(tenant.getAppId());
             throw new EmailServiceException(EmailServiceException.Code.MAX_RECIPIENTS_QUOTA_EXCEEDED);
         }
+
+        log.info("send: tenant: {}", tenant);
 
         checkFrequencyQuotaOrThrow(tenant);
 

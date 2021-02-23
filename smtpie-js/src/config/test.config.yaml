@@ -1,0 +1,27 @@
+tenants:
+  - name: alice
+    appId: alice-id
+    secret: s3cr3t
+    connection:
+      host: smtp-pulse.com
+      port: 465
+      ssl: true
+    credentials:
+      username: alice@example.com
+      password: s3cr3t
+    limits:
+      maxRecipients: 5
+      maxHourly: 50
+  - name: bob
+    appId: bob-id
+    secret: s3cr3t
+    connection:
+      host: smtp-pulse.com
+      port: 465
+      ssl: true
+    credentials:
+      username: bob@example.com
+      password: s3cr3t
+    limits:
+      maxRecipients: 5
+      maxHourly: 50

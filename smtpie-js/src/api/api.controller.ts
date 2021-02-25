@@ -1,7 +1,17 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Post,
+} from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { AppService } from "../app.service";
-import { TemplateService } from "../template-service/template.service";
+import { AppService } from '../app.service';
+import { TemplateService } from '../template-service/template.service';
+import { ConfigService, Tenant } from '../config/config.service';
+import Mail from 'nodemailer/lib/mailer';
 
 interface SendMailRequest {
   from: string;
@@ -14,29 +24,59 @@ interface SendMailRequest {
 
 @Controller('api/v1/mail')
 export class ApiController {
-  constructor(private readonly templateService: TemplateService) {}
+  private readonly logger = new Logger(ApiController.name);
+
+  constructor(
+    private readonly templateService: TemplateService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('send')
-  async send(@Body() req: SendMailRequest) {
-    const t = this.templateService.render('Hello, {{name}}', { name: 'Alice' });
-    console.log(t);
-    // const transporter = nodemailer.createTransport({
-    //   host: 'smtp-pulse.com',
-    //   port: 465,
-    //   secure: true,
-    //   auth: {
-    //     user: 'EMAIL',
-    //     pass: 'PASS',
-    //   },
-    // });
-    // const res = await transporter.sendMail({
-    //   from: req.from,
-    //   to: req.to.concat(','),
-    //   subject: req.subject,
-    //   html: req.templateUrl,
-    // });
+  async send(
+    @Headers('x-app-id') appId: string,
+    @Headers('x-secret') secret: string,
+    @Body() req: SendMailRequest,
+  ) {
+    const tenant: Tenant = this.configService.getTenant(appId);
+    if (tenant === undefined) {
+      throw new HttpException(
+        `Tenant: ${appId} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (tenant.secret !== secret) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    const message = await this.renderTemplate(req);
+    this.logger.debug(`Message: ${message}`);
+
+    const res = await this.getMailer(tenant).sendMail({
+      from: req.from,
+      to: req.to.concat(','),
+      subject: req.subject,
+      html: message,
+    });
     return {
       success: true,
+      data: res,
     };
+  }
+  async renderTemplate(req: SendMailRequest): Promise<string> {
+    const template =
+      req.template || (await this.templateService.resolve(req.templateUrl));
+    return this.templateService.render(template, req.params);
+  }
+
+  getMailer(tenant: Tenant): Mail {
+    return nodemailer.createTransport({
+      host: tenant.connection.host,
+      port: tenant.connection.port,
+      secure: tenant.connection.ssl,
+      auth: {
+        user: tenant.credentials.username,
+        pass: tenant.credentials.password,
+      },
+    });
   }
 }

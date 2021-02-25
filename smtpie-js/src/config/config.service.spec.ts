@@ -14,9 +14,10 @@ describe('ConfigService', () => {
     service = module.get<ConfigService>(ConfigService);
   });
 
-  it('should be defined', async () => {
+  it('should load config and get tenant', async () => {
     const filename = path.join(__dirname, 'test.config.yaml');
     await service.load(filename);
-    expect(service).toBeDefined();
+    const tenant = service.getTenant('alice-id');
+    expect(tenant.name).toEqual('alice');
   });
 });

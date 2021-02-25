@@ -5,7 +5,9 @@ import * as Handlebars from 'handlebars';
 @Injectable()
 export class TemplateService {
   private readonly logger = new Logger(TemplateService.name);
+
   templateCache: Map<string, string> = new Map();
+
   async resolve(templateUrl: string): Promise<string> {
     if (!this.templateCache.has(templateUrl)) {
       this.logger.log(`Fetching template from ${templateUrl}`);

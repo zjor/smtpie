@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from "@nestjs/common";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class Statistics {
@@ -15,9 +15,11 @@ export class Statistics {
 
 @Injectable()
 export class StatsService {
+  private readonly logger = new Logger(StatsService.name);
   readonly storage: Map<string, Statistics> = new Map();
 
   incSuccess(key: string): void {
+    this.logger.debug(`[${key}] success`);
     if (!this.storage.has(key)) {
       this.storage.set(key, new Statistics(0, 0));
     }
@@ -25,6 +27,7 @@ export class StatsService {
   }
 
   incFailure(key: string): void {
+    this.logger.debug(`[${key}] failure`);
     if (!this.storage.has(key)) {
       this.storage.set(key, new Statistics(0, 0));
     }

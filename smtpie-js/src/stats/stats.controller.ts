@@ -7,6 +7,6 @@ export class StatsController {
 
   @Get()
   index(): any {
-    return this.statsService.storage;
+    return Object.fromEntries(this.statsService.storage);
   }
 }

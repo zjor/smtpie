@@ -8,17 +8,28 @@ import {
   Post,
 } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { AppService } from '../app.service';
 import { TemplateService } from '../template-service/template.service';
 import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-interface SendMailRequest {
+export class SendMailRequest {
+  @ApiProperty()
   from: string;
+
+  @ApiProperty()
   to: Array<string>;
+
+  @ApiProperty()
   params?: any;
+
+  @ApiProperty()
   subject: string;
+
+  @ApiPropertyOptional()
   template?: string;
+
+  @ApiPropertyOptional()
   templateUrl?: string;
 }
 

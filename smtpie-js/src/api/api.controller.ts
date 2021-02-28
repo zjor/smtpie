@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { StatsService } from '../stats/stats.service';
 import { TemplateService } from '../template-service/template.service';
 import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
@@ -38,6 +39,7 @@ export class ApiController {
   private readonly logger = new Logger(ApiController.name);
 
   constructor(
+    private readonly statsService: StatsService,
     private readonly templateService: TemplateService,
     private readonly configService: ConfigService,
   ) {}
@@ -57,21 +59,28 @@ export class ApiController {
     }
 
     if (tenant.secret !== secret) {
+      this.statsService.incFailure(tenant.name);
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
-    const message = await this.renderTemplate(req);
-    this.logger.debug(`Message: ${message}`);
+    try {
+      const message = await this.renderTemplate(req);
+      this.logger.debug(`Message: ${message}`);
 
-    const res = await this.getMailer(tenant).sendMail({
-      from: req.from,
-      to: req.to.concat(','),
-      subject: req.subject,
-      html: message,
-    });
-    return {
-      success: true,
-      data: res,
-    };
+      const res = await this.getMailer(tenant).sendMail({
+        from: req.from,
+        to: req.to.concat(','),
+        subject: req.subject,
+        html: message,
+      });
+      this.statsService.incSuccess(tenant.name);
+      return {
+        success: true,
+        data: res,
+      };
+    } catch (e) {
+      this.statsService.incFailure(tenant.name);
+      throw e;
+    }
   }
   async renderTemplate(req: SendMailRequest): Promise<string> {
     const template =

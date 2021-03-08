@@ -17,11 +17,11 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: zjor/smtpie-multitenant:latest
+        - image: zjor/smtpie-js:latest
           imagePullPolicy: Always
           name: smtpie
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
           env:
             - name: TENANTS_CONFIG_FILE
               value: /etc/smtpie/.local.config.yaml
@@ -34,7 +34,7 @@ spec:
             periodSeconds: 15
             httpGet:
               path: /actuator/health
-              port: 8080
+              port: 3000
               scheme: HTTP
           readinessProbe:
             # failureThreshold: 10
@@ -42,7 +42,7 @@ spec:
             periodSeconds: 60
             httpGet:
               path: /actuator/health
-              port: 8080
+              port: 3000
               scheme: HTTP
       volumes:
         - name: config-volume

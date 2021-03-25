@@ -5,7 +5,7 @@ RESTful SMTP client
 ## Features
 
 - template rendering
-- fetches and chaches templates from URL
+- fetches and caches templates from URL
 - SMTP credentials encapsulation
 - multitenancy support (allows sending from different SMTP servers)
 - quota limits support (max recipients, hourly limits)

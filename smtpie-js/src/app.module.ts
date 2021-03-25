@@ -5,10 +5,11 @@ import { ConfigService } from './config/config.service';
 import { MonitoringController } from './monitoring/monitoring.controller';
 import { StatsController } from './stats/stats.controller';
 import { StatsService } from './stats/stats.service';
+import { QuotaService } from './quota/quota.service';
 
 @Module({
   imports: [],
   controllers: [ApiController, MonitoringController, StatsController],
-  providers: [TemplateService, ConfigService, StatsService],
+  providers: [TemplateService, ConfigService, StatsService, QuotaService],
 })
 export class AppModule {}

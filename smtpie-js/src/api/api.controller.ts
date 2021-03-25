@@ -62,6 +62,12 @@ export class ApiController {
       this.statsService.incFailure(tenant.name);
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
+
+    if (tenant.limits.maxRecipients < req.to.length) {
+      this.statsService.incFailure(tenant.name);
+      throw new HttpException('Too many recipients', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const message = await this.renderTemplate(req);
       this.logger.debug(`Message: ${message}`);
@@ -82,6 +88,7 @@ export class ApiController {
       throw e;
     }
   }
+
   async renderTemplate(req: SendMailRequest): Promise<string> {
     const template =
       req.template || (await this.templateService.resolve(req.templateUrl));

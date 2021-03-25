@@ -2,13 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from './config.service';
 
 import * as path from 'path';
+import { QuotaService } from '../quota/quota.service';
 
 describe('ConfigService', () => {
   let service: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ConfigService],
+      providers: [ConfigService, QuotaService],
     }).compile();
 
     service = module.get<ConfigService>(ConfigService);

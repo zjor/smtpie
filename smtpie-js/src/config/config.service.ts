@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 import * as yaml from 'yaml';
+import { QuotaService } from '../quota/quota.service';
 
 export interface Connection {
   host: string;
@@ -35,6 +36,8 @@ export class ConfigService implements OnModuleInit {
 
   private readonly tenantsCache: Map<string, Tenant> = new Map();
 
+  constructor(private readonly quoteService: QuotaService) {}
+
   async onModuleInit(): Promise<void> {
     this.logger.log('Initializing ConfigService');
     await this.load(process.env.TENANTS_CONFIG_FILE);
@@ -60,7 +63,10 @@ export class ConfigService implements OnModuleInit {
 
     const data = await readFile(fullPath, { encoding: 'utf-8' });
     const tenants = this.parse(data);
-    tenants.forEach((t: Tenant) => this.tenantsCache.set(t.appId, t));
+    tenants.forEach((t: Tenant) => {
+      this.tenantsCache.set(t.appId, t);
+      this.quoteService.addTenant(t.appId, t.limits.maxHourly);
+    });
   }
 
   getTenant(appId: string): Tenant | undefined {

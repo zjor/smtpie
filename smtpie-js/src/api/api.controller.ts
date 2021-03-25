@@ -13,6 +13,7 @@ import { TemplateService } from '../template-service/template.service';
 import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { QuotaService } from '../quota/quota.service';
 
 export class SendMailRequest {
   @ApiProperty()
@@ -42,6 +43,7 @@ export class ApiController {
     private readonly statsService: StatsService,
     private readonly templateService: TemplateService,
     private readonly configService: ConfigService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   @Post('send')
@@ -66,6 +68,15 @@ export class ApiController {
     if (tenant.limits.maxRecipients < req.to.length) {
       this.statsService.incFailure(tenant.name);
       throw new HttpException('Too many recipients', HttpStatus.BAD_REQUEST);
+    }
+
+    const now = new Date().getTime() / 1000;
+    if (!this.quotaService.checkQuota(tenant.appId, now)) {
+      this.statsService.incFailure(tenant.name);
+      throw new HttpException(
+        'Too many requests',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
     try {

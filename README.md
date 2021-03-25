@@ -1,16 +1,40 @@
 # SMTPie
 
-NestJS implementation
+RESTful SMTP client
 
-## API documentation
+## Features
 
-[Swagger](http://api.smtpie.xyz/swagger/)
+- template rendering
+- fetches and chaches templates from URL
+- SMTP credentials encapsulation
+- multitenancy support (allows sending from different SMTP servers)
+- quota limits support (max recipients, hourly limits)
 
-## How to send email locally?
+[API documentation](http://api.smtpie.xyz/swagger/)
+
+## How to send an email?
 
 ```bash
 http :3000/api/v1/mail/send @.local.request.json X-App-ID:smtpie-sendpulse X-Secret:DkG6mLW4FqNGdbYH
+```
+
+```bash
 http http://api.smtpie.xyz/api/v1/mail/send @.local.request.json X-App-ID:smtpie-sendpulse X-Secret:DkG6mLW4FqNGdbYH
+```
+
+`.local.request.json`:
+```json
+{
+  "from": "service@smtpie.xyz",
+  "to": [
+    "alice@example.com"
+  ],
+  "subject": "Hello world",
+  "templateUrl": "<YOUR_TEMPLATE_URL>",
+  "params": {
+    "<ATTR>": "<VALUE>"
+  }
+}
 ```
 
 ## Deployment

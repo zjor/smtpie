@@ -1,0 +1,11 @@
+{
+  "from": "service@smtpie.xyz",
+  "to": [
+    "zjor.se@gmail.com"
+  ],
+  "subject": "Hello from SMTPie",
+  "templateUrl": "https://raw.githubusercontent.com/zjor/smtpie/master/assets/test-template.html",
+  "params": {
+    "name": "Alice"
+  }
+}

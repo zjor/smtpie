@@ -18,6 +18,10 @@ export class TemplateService {
     return this.templateCache.get(templateUrl);
   }
 
+  invalidate(): void {
+    this.templateCache.clear();
+  }
+
   render(template: string, params?: any): string {
     const compiled = Handlebars.compile(template);
     return compiled(params);

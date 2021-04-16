@@ -12,28 +12,8 @@ import { StatsService } from '../stats/stats.service';
 import { TemplateService } from '../template-service/template.service';
 import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { QuotaService } from '../quota/quota.service';
-
-export class SendMailRequest {
-  @ApiProperty()
-  from: string;
-
-  @ApiProperty()
-  to: Array<string>;
-
-  @ApiProperty()
-  params?: any;
-
-  @ApiProperty()
-  subject: string;
-
-  @ApiPropertyOptional()
-  template?: string;
-
-  @ApiPropertyOptional()
-  templateUrl?: string;
-}
+import { SendMailRequest } from './dto/send-mail-request.dto';
 
 @Controller('api/v1/mail')
 export class ApiController {

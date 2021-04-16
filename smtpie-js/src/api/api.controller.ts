@@ -8,7 +8,6 @@ import {
   Post,
 } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { StatsService } from '../stats/stats.service';
 import { TemplateService } from '../template-service/template.service';
 import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
@@ -21,7 +20,6 @@ export class ApiController {
   private readonly logger = new Logger(ApiController.name);
 
   constructor(
-    private readonly statsService: StatsService,
     private readonly templateService: TemplateService,
     private readonly configService: ConfigService,
     private readonly quotaService: QuotaService,
@@ -43,18 +41,15 @@ export class ApiController {
     }
 
     if (tenant.secret !== secret) {
-      this.statsService.incFailure(tenant.name);
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
     if (tenant.limits.maxRecipients < req.to.length) {
-      this.statsService.incFailure(tenant.name);
       throw new HttpException('Too many recipients', HttpStatus.BAD_REQUEST);
     }
 
     const now = new Date().getTime() / 1000;
     if (!this.quotaService.checkQuota(tenant.appId, now)) {
-      this.statsService.incFailure(tenant.name);
       throw new HttpException(
         'Too many requests',
         HttpStatus.TOO_MANY_REQUESTS,
@@ -77,14 +72,11 @@ export class ApiController {
         JSON.stringify(req),
       );
 
-      this.statsService.incSuccess(tenant.name);
-
       return {
         success: true,
         data: res,
       };
     } catch (e) {
-      this.statsService.incFailure(tenant.name);
       await this.eventLogRepository.createEventLog(
         tenant.name,
         JSON.stringify(req),

@@ -1,17 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
-import { StatsService } from '../stats/stats.service';
 import { TemplateService } from '../template-service/template.service';
+import { EventLogService } from '../event-log/event-log.service';
 
 @Controller('stats')
 export class StatsController {
   constructor(
-    private readonly statsService: StatsService,
     private readonly templateService: TemplateService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Get()
-  index(): any {
-    return Object.fromEntries(this.statsService.storage);
+  async index(): Promise<any> {
+    return this.eventLogService.getStats();
   }
 
   @Get('invalidate-cache')

@@ -6,9 +6,15 @@ import { MonitoringController } from './monitoring/monitoring.controller';
 import { StatsController } from './stats/stats.controller';
 import { StatsService } from './stats/stats.service';
 import { QuotaService } from './quota/quota.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from './config/typeorm.config';
+import { EventLogRepository } from './event-log/event-log.repository';
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forFeature([EventLogRepository]),
+  ],
   controllers: [ApiController, MonitoringController, StatsController],
   providers: [TemplateService, ConfigService, StatsService, QuotaService],
 })

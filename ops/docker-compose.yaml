@@ -1,0 +1,13 @@
+version: '3'
+services:
+
+  smtpie-db:
+    image: postgres:10.6-alpine
+    volumes:
+      - /tmp/var/lib/smtpie/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: smtpie
+      POSTGRES_USER: smtpie
+      POSTGRES_PASSWORD: s3cr3t

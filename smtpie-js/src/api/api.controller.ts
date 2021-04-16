@@ -14,6 +14,7 @@ import { ConfigService, Tenant } from '../config/config.service';
 import Mail from 'nodemailer/lib/mailer';
 import { QuotaService } from '../quota/quota.service';
 import { SendMailRequest } from './dto/send-mail-request.dto';
+import { EventLogRepository } from '../event-log/event-log.repository';
 
 @Controller('api/v1/mail')
 export class ApiController {
@@ -24,6 +25,7 @@ export class ApiController {
     private readonly templateService: TemplateService,
     private readonly configService: ConfigService,
     private readonly quotaService: QuotaService,
+    private readonly eventLogRepository: EventLogRepository,
   ) {}
 
   @Post('send')
@@ -69,13 +71,25 @@ export class ApiController {
         subject: req.subject,
         html: message,
       });
+
+      await this.eventLogRepository.createEventLog(
+        tenant.name,
+        JSON.stringify(req),
+      );
+
       this.statsService.incSuccess(tenant.name);
+
       return {
         success: true,
         data: res,
       };
     } catch (e) {
       this.statsService.incFailure(tenant.name);
+      await this.eventLogRepository.createEventLog(
+        tenant.name,
+        JSON.stringify(req),
+        JSON.stringify(e),
+      );
       throw e;
     }
   }

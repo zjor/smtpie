@@ -8,7 +8,7 @@ export class EventLogRepository extends Repository<EventLog> {
     request: string,
     error?: string,
   ): Promise<EventLog> {
-    const obj = new EventLog();
+    const obj = this.create();
     obj.timestamp = new Date().getTime();
     obj.tenant = tenant;
     obj.request = request;

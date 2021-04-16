@@ -25,6 +25,14 @@ spec:
           env:
             - name: TENANTS_CONFIG_FILE
               value: /etc/smtpie/.local.config.yaml
+            - name: DB_HOST
+              value: smtpie-db
+            - name: DB_USER
+              value: smtpie
+            - name: DB_PASS
+              value: Nzg23UCp5cRIhoamdwfwXuRp
+            - name: DB_NAME
+              value: smtpie
           volumeMounts:
             - name: config-volume
               mountPath: /etc/smtpie

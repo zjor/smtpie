@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: smtpie-db
+  name: smtpie-db
+  namespace: smtpie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtpie-db
+  template:
+    metadata:
+      labels:
+        app: smtpie-db
+    spec:
+      containers:
+        - env:
+            # Due to https://github.com/docker-library/postgres/issues/263#issuecomment-280504406
+            - name: PGDATA
+              value: /var/lib/postgresql/data/subdir
+            - name: POSTGRES_DB
+              value: smtpie
+            - name: POSTGRES_PASSWORD
+              value: Nzg23UCp5cRIhoamdwfwXuRp
+            - name: POSTGRES_USER
+              value: smtpie
+          image: postgres:10.1-alpine
+          name: smtpie-db
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: smtpie-db
+      volumes:
+        - name: smtpie-db
+          persistentVolumeClaim:
+            claimName: smtpie-db
+      nodeSelector:
+        nick: alice
+      

@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('event-log')
+@Entity('event_log')
 export class EventLog extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

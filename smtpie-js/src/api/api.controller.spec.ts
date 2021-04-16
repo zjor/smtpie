@@ -4,6 +4,9 @@ import { StatsService } from '../stats/stats.service';
 import { TemplateService } from '../template-service/template.service';
 import { ConfigService } from '../config/config.service';
 import { QuotaService } from '../quota/quota.service';
+import { EventLogRepository } from '../event-log/event-log.repository';
+
+const mockEventLogRepository = () => ({});
 
 describe('ApiController', () => {
   let controller: ApiController;
@@ -11,7 +14,13 @@ describe('ApiController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ApiController],
-      providers: [StatsService, TemplateService, ConfigService, QuotaService],
+      providers: [
+        StatsService,
+        TemplateService,
+        ConfigService,
+        QuotaService,
+        { provide: EventLogRepository, useFactory: mockEventLogRepository },
+      ],
     }).compile();
 
     controller = module.get<ApiController>(ApiController);
